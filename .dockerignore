@@ -1,0 +1,22 @@
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore git 
+.git/
+.gitignore
+
+# Ignore virtual environment
+weather-venv/
+
+# Ignore other unnecessary files
+*.log
+*.csv
+*.json
+.DS_Store
+
+# ignore the files which the app created
+history/
+LICENSE
+tests/
+*.md

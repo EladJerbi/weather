@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container mt-4">
+  <h1>Forecast List</h1>
+  <div class="location-info">
+    <h3 class="text-dark">{{ forecast[0] }}, {{ forecast[1] }}</h3>
+  </div>
+  {% for i in range(2, forecast|length, 5) %}
+    <div class="row justify-content-start">
+      {% for object in forecast[i:i+5] %}
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="card card-sm mb-4" style="background-color: #584F69;">
+          <div class="card-body text-white">
+            <h5 class="card-title text-white">{{ object.weather_date }}</h5>
+            <p class="card-text">Temperature: {{ object.temperature }}</p>
+            <p class="card-text">Humidity: {{ object.humidity }}</p>
+            <img src="{{ object.icon }}" alt="Weather Icon" class="weather-icon">
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
