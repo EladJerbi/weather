@@ -4,10 +4,16 @@ import requests
 import os
 import json
 import logging
-from config import *
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from prometheus_flask_exporter import PrometheusMetrics
 
+
+# Get the value of an environment variable
+HISTORY_DIR = os.getenv('HISTORY_DIR', '/weather-history')
+APP_ENV = os.getenv('APP_ENV', 'development')
+WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+LOG_DIRECTORY = os.getenv('LOG_DIRECTORY', '/var/log/weather-app-logs')
+DEBUG = APP_ENV == 'development'
 
 # turn this file to flask app.
 app = Flask(__name__)
