@@ -8,6 +8,7 @@ spec:
     image: gcr.io/kaniko-project/executor:latest
     args: ["--dockerfile=/workspace/dockerfile",
             "--context=dir://workspace",
+            "--verbosity=debug",
             "--destination=eladjerbi/weather"] # replace with your DockerHub account
     volumeMounts:
       - name: kaniko-secret
