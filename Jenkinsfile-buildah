@@ -1,7 +1,26 @@
 pipeline {
   agent {
     kubernetes {
-        yamlFile 'buildah-pod.yaml'
+      yaml '''
+apiVersion: v1
+kind: Pod
+metadata:
+  name: buildah
+spec:
+  containers:
+  - name: buildah
+    image: quay.io/buildah/stable:v1.23.1
+    command:
+    - cat
+    tty: true
+    securityContext:
+      privileged: true
+    volumeMounts:
+      - name: varlibcontainers
+        mountPath: /var/lib/containers
+  volumes:
+    - name: varlibcontainers
+'''   
     }
   }
   options {
@@ -16,7 +35,7 @@ pipeline {
     stage('Build with Buildah') {
       steps {
         container('buildah') {
-          sh 'buildah build -t eladjerbi/weather:buildah-test .'
+          sh 'buildah build -t eladjerbi/weather:buildah .'
         }
       }
     }
@@ -30,15 +49,15 @@ pipeline {
     stage('tag image') {
       steps {
         container('buildah') {
-          sh 'buildah tag eladjerbi/weather:buildah-test eladjerbi/weather:buildah-test-taged'
+          sh 'buildah tag eladjerbi/weather:buildah eladjerbi/weather:latest'
         }
       }
     }
     stage('push image') {
       steps {
         container('buildah') {
-          sh 'buildah push eladjerbi/weather:buildah-test'
-          sh 'buildah push eladjerbi/weather:buildah-test-taged'
+          sh 'buildah push eladjerbi/weather:buildah'
+          sh 'buildah push eladjerbi/weather:latest'
         }
       }
     }
