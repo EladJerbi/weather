@@ -1,10 +1,30 @@
-podTemplate(cloud: 'minikube', containers: [
-    containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl', command: 'cat', ttyEnabled: true)
-]) {
-    node('kubectl') {
+pipeline {
+    agent {
+        kubernetes {
+            cloud 'minikube'
+            label 'kubectl-pod'
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    some-label: some-label-value
+spec:
+  containers:
+  - name: kubectl
+    image: lachlanevenson/k8s-kubectl
+    command:
+    - cat
+    tty: true
+"""
+        }
+    }
+    stages {
         stage('Run kubectl command') {
-            container('kubectl') {
-                sh 'kubectl get pods'
+            steps {
+                container('kubectl') {
+                    sh 'kubectl get pods'
+                }
             }
         }
     }
