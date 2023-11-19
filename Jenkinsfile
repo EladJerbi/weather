@@ -20,7 +20,14 @@ spec:
         stage('Run kubectl command') {
             steps {
                 container('kubectl') {
-                    sh 'kubectl get pods'
+                    script {
+                        try {
+                            sh 'kubectl get pods'
+                        } catch (Exception e) {
+                            echo "Error running kubectl get pods: ${e}"
+                            throw e
+                        }
+                    }
                 }
             }
         }
