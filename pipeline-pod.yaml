@@ -10,6 +10,10 @@ spec:
             "--context=dir://workspace",
             "--verbosity=debug",
             "--destination=eladjerbi/weather"] # replace with your DockerHub account
+    resources:
+      limits:
+        cpu: "1"
+        memory: "1Gi"
     volumeMounts:
       - name: kaniko-secret
         mountPath: /kaniko/.docker
