@@ -32,8 +32,8 @@ spec:
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
           sh '''#!/busybox/sh
-            echo "FROM jenkins/inbound-agent:latest" > Dockerfile
-            /kaniko/executor --context `pwd` --destination eladjerbi/weather:kaniko-test
+            ls -la ./*
+            # /kaniko/executor --context `pwd` --destination eladjerbi/weather:kaniko-test
           '''
         }
       }
