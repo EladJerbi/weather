@@ -12,18 +12,10 @@ spec:
     volumeMounts:
       - name: kaniko-secret
         mountPath: /kaniko/.docker
-    resources:
-      limits:
-        cpu: "500m"
-        memory: "512Mi"
-      requests:
-        cpu: "200m"
-        memory: "256Mi"
   restartPolicy: Never
   volumes:
     - name: kaniko-secret
       secret:
-        namespace: default
         secretName: regcred
         items:
           - key: .dockerconfigjson
