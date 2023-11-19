@@ -2,29 +2,17 @@ pipeline {
     agent {
         kubernetes {
             cloud 'minikube'
-            label 'kubectl-pod'
-            yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    some-label: some-label-value
-spec:
-  containers:
-  - name: kubectl
-    image: lachlanevenson/k8s-kubectl
-"""
         }
     }
     stages {
-        stage('Run kubectl command') {
+        stage('checkout') {
             steps {
-                container('kubectl') {
+                container('jnlp') {
                     script {
                         try {
-                            sh 'kubectl get pods'
+                            sh 'hostname'
                         } catch (Exception e) {
-                            echo "Error running kubectl get pods: ${e}"
+                            echo "Error building Docker image: ${e}"
                             throw e
                         }
                     }
