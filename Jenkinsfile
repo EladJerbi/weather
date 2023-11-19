@@ -13,6 +13,11 @@ pipeline {
                     sh 'ls'
                     sh '/kaniko/executor --context `pwd` --destination eladjerbi/weather:kaniko-test'
                 }
+                container('jnlp') {
+                    sh 'ls /workspace/dockerfile'
+                    sh 'ls ./*'
+                    sh 'ls'
+                }
             }
         }
     }
