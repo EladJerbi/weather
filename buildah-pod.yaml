@@ -20,3 +20,5 @@ spec:
         memory: "512Mi"
   volumes:
     - name: varlibcontainers
+      persistentVolumeClaim:
+        claimName: buildah-pvc
