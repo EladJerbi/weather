@@ -17,7 +17,7 @@ COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Set the PYTHONPATH environment variable
-ENV PYTHONPATH= /home/weather
+ENV PYTHONPATH=/home/weather:$PYTHONPATH
 
 # Make the start.sh script executable
 RUN chmod +x start.sh
