@@ -2,6 +2,7 @@ pipeline {
   agent {
     kubernetes {
       yamlFile 'kaniko-pod.yaml'
+            containerTemplate(name: 'jnlp', image: 'eladjerbi/jenkins-agents:python3', alwaysPullImage: true, args: '${computer.jnlpmac} ${computer.name}')
     }
   }
   stages {
