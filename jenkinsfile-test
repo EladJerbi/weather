@@ -8,7 +8,7 @@ metadata:
   labels:
     some-label: some-label-value
 spec:
-  serviceAccountName: jenkins
+  serviceAccountName: jenkins-agent
   containers:
   - name: jnlp
     image: eladjerbi/jenkins-agents:python3
