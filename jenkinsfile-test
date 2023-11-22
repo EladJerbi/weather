@@ -16,6 +16,8 @@ pipeline {
     stage('Build with Kaniko') {
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
+          sh "ls"
+          sh "ls /home/jenkins/agent"
           sh '''#!/busybox/sh
             /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination eladjerbi/weather:kaniko-test
           '''
