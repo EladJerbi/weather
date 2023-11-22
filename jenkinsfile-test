@@ -11,7 +11,7 @@ spec:
   serviceAccountName: jenkins
   containers:
   - name: jnlp
-    image: jenkins-python
+    image: eladjerbi/jenkins-agents:python3
     args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
 """
     }
