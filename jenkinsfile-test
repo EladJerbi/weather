@@ -1,0 +1,28 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    some-label: some-label-value
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: jnlp
+    image: jenkins-python
+    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
+"""
+    }
+  }
+  stages {
+    stage('Run unit tests') {
+      steps {
+        container('jnlp') {
+          sh 'python3 -m unittest discover -s tests -p "test_*.py"'
+        }
+      }
+    }
+  }
+}
