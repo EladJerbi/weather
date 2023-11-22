@@ -8,7 +8,7 @@ pipeline {
     stage('Run unit tests') {
       steps {
         container('python') {
-          sh 'python3 --version # m unittest discover -s tests -p "test_*.py"'
+          sh 'python3 -m unittest discover -s tests -p "test_*.py"'
         }
       }
     }
