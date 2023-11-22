@@ -10,9 +10,7 @@ spec:
   containers:
   - name: jnlp
     image: eladjerbi/jenkins-agents:python3
-    args:
-    - '^${computer.jnlpmac}'
-    - '^${computer.name}'
+    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
     volumeMounts:
     - name: workspace-volume
       mountPath: /home/jenkins/agent
@@ -29,7 +27,7 @@ spec:
     - name: cache
       mountPath: /workspace/cache
     - name: workspace-volume
-      mountPath: /home/jenkins
+      mountPath: /home/jenkins/agent
   volumes:
   - name: jenkins-docker-cfg
     projected:
