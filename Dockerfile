@@ -19,9 +19,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set the PYTHONPATH environment variable
-ENV PYTHONPATH=/home/weather:$PYTHONPATH
-
 # Expose the port that the application runs on
 EXPOSE 80
 
