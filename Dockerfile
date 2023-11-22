@@ -1,14 +1,23 @@
 # Use the official Python image as the base image
 FROM docker.io/python:3.10
 
+# Create a non-root user
+RUN useradd -m weather
+
+# Switch to the non-root user
+USER weather
+
 # Set the working directory in the container
-WORKDIR /weather-app
+WORKDIR /home/weather/weather-app
 
 # Copy the current directory contents into the container at /weather-app
-COPY . /weather-app
+COPY . .
 
 # Install any necessary dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH= /home/weather
 
 # Make the start.sh script executable
 RUN chmod +x start.sh

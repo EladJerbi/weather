@@ -7,8 +7,10 @@ export $(grep -v '^#' .env | xargs)
 export $(grep -v '^#' /vault/secrets/config | xargs)
 
 # Create directories for every variable with DIR in its name
-for var in $(compgen -v | grep DIR); do
-  mkdir -p ${!var}
+for var in $(compgen -v); do
+  if [[ $var == *DIR ]]; then
+    mkdir -p "${!var}"
+  fi
 done
 
 # Start your application with Gunicorn on port 80
