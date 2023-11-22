@@ -1,13 +1,14 @@
 pipeline {
   agent {
     kubernetes {
-      yamlFile 'kaniko-pod.yaml'
+      yamlFile 'pod.yaml'
     }
-  }
+   }
   stages {
     stage('Run unit tests') {
       steps {
-        container('jnlp') {
+        container('python') {
+          sh 'export PYTHONPATH=/home/jenkins/agent/workspace:$PYTHONPATH'
           sh 'python3 -m unittest discover -s tests -p "test_*.py"'
         }
       }
@@ -19,7 +20,7 @@ pipeline {
             /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination eladjerbi/weather:kaniko-test
           '''
         }
-      }
-    }
+     }
+   }
   }
 }

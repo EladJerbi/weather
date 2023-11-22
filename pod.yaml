@@ -17,6 +17,10 @@ spec:
         mountPath: /kaniko/.docker
       - name: cache
         mountPath: /workspace/cache
+    resources:
+      limits:
+        cpu: "2"
+        memory: "2Gi"
   volumes:
   - name: jenkins-docker-cfg
     projected:
