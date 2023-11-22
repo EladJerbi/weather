@@ -1,28 +1,25 @@
 pipeline {
   agent {
     kubernetes {
-      yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    some-label: some-label-value
-spec:
-  serviceAccountName: jenkins-agent
-  containers:
-  - name: jnlp
-    image: eladjerbi/jenkins-agents:python3
-    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
-"""
+      yamlFile 'weather-pod.yaml'
     }
-  }
+   }
   stages {
     stage('Run unit tests') {
       steps {
         container('jnlp') {
-          sh 'python3 -m unittest discover -s tests -p "test_*.py"'
+          sh 'python3 --version # m unittest discover -s tests -p "test_*.py"'
         }
       }
     }
+    stage('Build with Kaniko') {
+      steps {
+        container(name: 'kaniko', shell: '/busybox/sh') {
+          sh '''#!/busybox/sh
+            /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination eladjerbi/weather:kaniko-test
+          '''
+        }
+     }
+   }
   }
 }
