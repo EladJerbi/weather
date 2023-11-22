@@ -10,10 +10,12 @@ spec:
   containers:
   - name: jnlp
     image: eladjerbi/jenkins-agents:python3
-    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
+    args:
+    - '^${computer.jnlpmac}'
+    - '^${computer.name}'
     volumeMounts:
     - name: workspace-volume
-      mountPath: /home/jenkins
+      mountPath: /home/jenkins/agent
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     imagePullPolicy: Always
