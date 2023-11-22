@@ -8,16 +8,16 @@ pipeline {
     stage('Run unit tests') {
       steps {
         container('python') {
-            sh 'sleep 1111111111'
-          sh 'ls # python3 -m unittest discover -s tests -p "test_*.py"'
+          sh 'ls -l /home/jenkins/agent/workspace'
+          sh 'export PYTHONPATH=/home/jenkins/agent/workspace:$PYTHONPATH'
+          sh 'python3 -m unittest discover -s tests -p "test_*.py"'
         }
       }
     }
     stage('Build with Kaniko') {
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
-          sh "ls"
-          sh "ls /home/jenkins/agent"
+          sh 'ls -l /home/jenkins/agent/workspace'
           sh '''#!/busybox/sh
             /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination eladjerbi/weather:kaniko-test
           '''
