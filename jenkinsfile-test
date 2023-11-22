@@ -8,6 +8,7 @@ pipeline {
     stage('Run unit tests') {
       steps {
         container('jnlp') {
+            sh 'ls -la /*'
           sh 'python3 --version # m unittest discover -s tests -p "test_*.py"'
         }
       }
