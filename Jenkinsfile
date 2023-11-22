@@ -1,52 +1,24 @@
 pipeline {
   agent {
     kubernetes {
-      yamlFile 'buildah-pod.yaml'
+      yamlFile 'kaniko-pod.yaml'
     }
-  }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '10'))
-    durabilityHint('PERFORMANCE_OPTIMIZED')
-    disableConcurrentBuilds()
-  }
-  environment {
-    DH_CREDS=credentials('dockerhub')
   }
   stages {
-    stage('Build with Buildah') {
+    stage('Run unit tests') {
       steps {
-        container('buildah') {
-          sh 'buildah build -t eladjerbi/weather:buildah .'
+        container('jnlp') {
+          sh 'python3 -m unittest discover -s tests -p "test_*.py"'
         }
       }
     }
-    stage('Login to Docker Hub') {
+    stage('Build with Kaniko') {
       steps {
-        container('buildah') {
-          sh 'echo $DH_CREDS_PSW | buildah login -u $DH_CREDS_USR --password-stdin docker.io'
+        container(name: 'kaniko', shell: '/busybox/sh') {
+          sh '''#!/busybox/sh
+            /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination eladjerbi/weather:kaniko-test
+          '''
         }
-      }
-    }
-    stage('tag image') {
-      steps {
-        container('buildah') {
-          sh 'buildah tag eladjerbi/weather:buildah eladjerbi/weather:latest'
-        }
-      }
-    }
-    stage('push image') {
-      steps {
-        container('buildah') {
-          sh 'buildah push eladjerbi/weather:buildah'
-          sh 'buildah push eladjerbi/weather:latest'
-        }
-      }
-    }
-  }
-  post {
-    always {
-      container('buildah') {
-        sh 'buildah logout docker.io'
       }
     }
   }

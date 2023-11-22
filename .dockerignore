@@ -15,6 +15,9 @@ tests/
 *.csv
 *.json
 .DS_Store
+tests/
+Jenkinsfile
+kaniko-pod.yaml
 
 # ignore the files which the app created
 history/
