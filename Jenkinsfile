@@ -18,7 +18,7 @@ pipeline {
       steps {
         container('kubectl') {
           sh '''
-            kubectl create pod weather-testing --image=eladjerbi/weather:kaniko-test -n testing
+            kubectl run weather-testing --image=eladjerbi/weather:kaniko-test -n testing
           '''
         }
       }
