@@ -9,10 +9,10 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 
 # Get the value of an environment variable
-HISTORY_DIR = os.getenv('HISTORY_DIR', '/weather-history')
+HISTORY_DIR = os.getenv('HISTORY_DIR', 'weather-history')
 APP_ENV = os.getenv('APP_ENV', 'development')
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
-LOG_DIRECTORY = os.getenv('LOG_DIRECTORY', '/home/weather/weather-app/logs')
+LOG_DIRECTORY = os.getenv('LOG_DIRECTORY', 'logs')
 DEBUG = APP_ENV == 'development'
 
 # turn this file to flask app.
@@ -43,11 +43,18 @@ class Forecast:
     def __str__(self):
         # Define the string representation of the object
         return f"Weather Date: {self.weather_date}, Temperature: {self.temperature}, Humidity: {self.humidity}, Icon: {self.icon}"
-
+    
+    def to_dict(self):
+        return {
+            "weather_date": self.weather_date,
+            "temperature": self.temperature,
+            "humidity": self.humidity,
+            "icon": self.icon,
+    }
 
 def convert_temperature(temperature_kelvin):
     temperature_celsius = temperature_kelvin - 273.15
-    return int(temperature_celsius)
+    return round(temperature_celsius)
 
 def get_weather(place):
     city_name = place.capitalize()

@@ -8,19 +8,16 @@ __pycache__/
 
 # Ignore virtual environment
 weather-venv/
-tests/
 
 # Ignore other unnecessary files
 *.log
 *.csv
 *.json
 .DS_Store
-tests/
 Jenkinsfile
 pod.yaml
 
 # ignore the files which the app created
 history/
 LICENSE
-tests/
 *.md

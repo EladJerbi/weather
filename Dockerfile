@@ -19,6 +19,15 @@ RUN pip3 install --no-cache-dir -r requirements.txt && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=/home/weather/weather-app:$PYTHONPATH
+
+# Run the unit tests
+RUN python3 -m unittest discover -s tests
+
+# remove the tests directory
+RUN rm -rf tests
+
 # Expose the port that the application runs on
 EXPOSE 80
 

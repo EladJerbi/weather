@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from weather.app import convert_temperature, get_weather
+from app import convert_temperature, get_weather, Forecast
 
 class ConvertTemperatureTestCase(unittest.TestCase):
 
@@ -29,6 +29,9 @@ class GetWeatherTestCase(unittest.TestCase):
 
         # Call the function with a sample input
         days = get_weather("new york")
+
+        # Convert the Forecast objects to dictionaries
+        days = [day.__dict__ if isinstance(day, Forecast) else day for day in days]
 
         # Define the expected output
         expected = [
