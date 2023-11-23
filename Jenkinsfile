@@ -18,8 +18,8 @@ pipeline {
       steps {
         container('kubectl') {
           sh '''
-            kubectl k get pods -n testing
-            kubectl k get pods -n jenkins-agents
+            kubectl get pods -n testing
+            kubectl get pods -n jenkins-agents
           '''
         }
       }

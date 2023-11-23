@@ -10,7 +10,7 @@ spec:
     image: bitnami/kubectl:latest
     securityContext:
       runAsUser: 1000
-      runAsGroup: 1000
+      runAsGroup: 1001
     imagePullPolicy: Always
     command:
     - sleep
