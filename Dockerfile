@@ -19,6 +19,9 @@ RUN pip3 install --no-cache-dir -r requirements.txt && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Switch to the non-root user
+USER weather
+
 # Set the PYTHONPATH environment variable
 ENV PYTHONPATH=/home/weather/weather-app:$PYTHONPATH
 
@@ -30,9 +33,6 @@ RUN rm -rf tests
 
 # Expose the port that the application runs on
 EXPOSE 80
-
-# Switch to the non-root user
-USER weather
 
 # Define the command to run the application when the container starts
 CMD ["./start.sh"]

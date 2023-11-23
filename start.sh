@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # stop the script if any command fails
 
 # Load environment variables from .env file
 export $(grep -v '^#' .env | xargs)
@@ -13,5 +14,4 @@ for var in $(compgen -v); do
   fi
 done
 
-# Start your application with Gunicorn on port 80
-exec gunicorn -b :80 app:app
+exec gunicorn -w 3 -b :80 app:app
