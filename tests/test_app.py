@@ -2,22 +2,18 @@ import os
 import shutil
 import unittest
 from unittest.mock import patch
-from app import convert_temperature, get_weather, Forecast
 
+# Define the directories
 LOG_DIRECTORY = '/home/weather/weather-app/logs'  
 HISTORY_DIR = '/home/weather/weather-app/history' 
 
-class ConvertTemperatureTestCase(unittest.TestCase):
-    
-    def setUp(self):
-        # Create the directories before each test
-        os.makedirs(LOG_DIRECTORY, exist_ok=True)
-        os.makedirs(HISTORY_DIR, exist_ok=True)
+# Create the directories before importing the app module
+os.makedirs(LOG_DIRECTORY, exist_ok=True)
+os.makedirs(HISTORY_DIR, exist_ok=True)
 
-    def tearDown(self):
-        # Delete the directories after each test
-        shutil.rmtree(LOG_DIRECTORY)
-        shutil.rmtree(HISTORY_DIR)
+from app import convert_temperature, get_weather, Forecast
+
+class ConvertTemperatureTestCase(unittest.TestCase):
 
     def test_convert_temperature(self):
         # Test that the function correctly converts a temperature from Kelvin to Celsius
@@ -26,16 +22,6 @@ class ConvertTemperatureTestCase(unittest.TestCase):
 
 @patch('requests.get')
 class GetWeatherTestCase(unittest.TestCase):
-
-    def setUp(self):
-        # Create the directories before each test
-        os.makedirs(LOG_DIRECTORY, exist_ok=True)
-        os.makedirs(HISTORY_DIR, exist_ok=True)
-
-    def tearDown(self):
-        # Delete the directories after each test
-        shutil.rmtree(LOG_DIRECTORY)
-        shutil.rmtree(HISTORY_DIR)
 
     def test_get_weather(self, mock_get):
         # Define a mock response object with a status_code property and a json method
@@ -68,6 +54,13 @@ class GetWeatherTestCase(unittest.TestCase):
 
         # Assert that the function's output matches the expected output
         self.assertEqual(days, expected)
+
+
+class TestApp(unittest.TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(LOG_DIRECTORY, ignore_errors=True)
+        shutil.rmtree(HISTORY_DIR, ignore_errors=True)
 
 if __name__ == '__main__':
     unittest.main()
