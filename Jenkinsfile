@@ -14,5 +14,14 @@ pipeline {
         }
      }
    }
+    stage('Deploy with kubectl') {
+      steps {
+        container('kubectl') {
+          sh '''
+            kubectl k get all -A
+          '''
+        }
+      }
+    }
   }
 }
