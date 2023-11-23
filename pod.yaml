@@ -4,6 +4,7 @@ metadata:
   name: kaniko
   namespace: jenkins
 spec:
+  serviceAccountName: jenkins-agent
   containers:
   - name: kubectl
     image: bitnami/kubectl:latest
