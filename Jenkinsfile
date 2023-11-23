@@ -18,8 +18,7 @@ pipeline {
       steps {
         container('kubectl') {
           sh '''
-            kubectl get pods -n testing
-            kubectl get pods -n jenkins-agents
+            kubectl create pod weather-testing --image=eladjerbi/weather:kaniko-test -n testing
           '''
         }
       }
