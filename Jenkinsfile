@@ -32,6 +32,8 @@ pipeline {
                     '''
                 }
                 container('jnlp') {
+                    sh 'whoami'
+                    sh 'sleep 10100010'
                     sh 'git push --tags'
                 }
             }
