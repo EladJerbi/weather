@@ -27,7 +27,8 @@ pipeline {
                     ./version.sh
 
                     echo "Building Docker image for the main branch, IMAGE_TAG created fron version.sh script"
-                    /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                    /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$(git describe --tags --abbrev=0)
+                    git push --tags
                     '''
                 }
             }
