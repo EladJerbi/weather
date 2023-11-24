@@ -27,5 +27,5 @@ calculate_version() {
 # Determine the next version based on the first word of the latest commit
 next_version=$(calculate_version "$first_word")
 
-echo "Next Semantic Version: v$next_version"
+echo "v$next_version"
 git tag "v$next_version"
