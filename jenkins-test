@@ -42,11 +42,11 @@ pipeline {
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     script {
-                        def imageNameTag = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
+                        def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
                         echo "Branch Name: ${env.GIT_BRANCH}"
-                        echo "Image Name Tag: ${imageNameTag}"
+                        echo "Image imageTag : ${imageTag}"
                         echo "Building Docker image for ${env.GIT_BRANCH} branch"
-                        sh "/kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/$imageNameTag"
+                        sh "/kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/${IMAGE_NAME}-testing:$imageTag"
                     }
                 }
             }
@@ -60,18 +60,14 @@ pipeline {
             }
             steps {
                 container('kubectl') {
-                    sh 'echo BRANCH NAME == $BRANCH_NAME'
                     sh 'echo "Deploying to Kubernetes cluster"'
-                    
                     script {
-                        if (env.BRANCH_NAME == 'main') {
+                        if (env.GIT_BRANCH == 'origin/main') {
                             sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
                             sh "argocd app sync weather-app"
                         } else {
-                            def imageName = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
-                            echo "Image Name Tag: ${imageName}"
-                            sh "kubectl run $imageName --image=eladjerbi/$imageName -n testing"
-                            sh "kubectl create deployment $imageName --image=$DOCKER_REGISTRY/$imageName -n $KUBE_NAMESPACE"
+                            def imageName = "${IMAGE_NAME}:${BUILD_NUMBER}-${GIT_COMMIT}"
+                            sh "kubectl run $imageName --image=eladjerbi/$imageName-testing -n testing"
                         }
                     }
                 }
