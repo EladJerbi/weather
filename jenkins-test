@@ -21,9 +21,10 @@ pipeline {
             }
             steps {
                 script {
-                    sleep 99999999
                     // Run version.sh and capture the output
                     env.IMAGE_TAG = sh(script: './version.sh', returnStdout: true).trim()
+                    echo "$DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+                    sleep 99999999
                 }
                 // Build the Docker image with Kaniko in the kaniko container
                 container(name: 'kaniko', shell: '/busybox/sh') {
