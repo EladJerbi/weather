@@ -66,8 +66,8 @@ pipeline {
                             sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
                             sh "argocd app sync weather-app"
                         } else {
-                            def imageName = "${IMAGE_NAME}:${BUILD_NUMBER}-${GIT_COMMIT}"
-                            sh "kubectl run $imageName --image=eladjerbi/$imageName-testing -n testing"
+                            def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
+                            sh "kubectl run weather-${BUILD_NUMBER} --image=eladjerbi/$IMAGE_NAME-testing:${imageTag} -n testing"
                         }
                     }
                 }
