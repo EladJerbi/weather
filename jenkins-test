@@ -12,7 +12,7 @@ pipeline {
         GITOPS_REPO = 'https://github.com/EladJerbi/gitops-weather.git'
     }
     stages {
-        stage('Build with Kaniko') {
+        stage('Build with Kaniko if main branch') {
             when {
                 expression {
                     // Execute this stage only if the branch is 'main'
@@ -31,7 +31,7 @@ pipeline {
                 }
             }
         }
-        stage('Build for other branches') {
+        stage('Build with Kaniko if not main branch') {
             when {
                 expression {
                     // Execute this stage for any branch other than 'main'
@@ -41,10 +41,10 @@ pipeline {
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     script {
-                        def imageName-tag = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
+                        def imageName_tag = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
                         sh '''
                         echo "Building Docker image for $GIT_BRANCH branch"
-                        /kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/$imageName-tag
+                        /kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/$imageName_tag
                         '''
                     }
                 }
