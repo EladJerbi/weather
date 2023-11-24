@@ -1,17 +1,35 @@
 # Use the official Python image as the base image
-FROM docker.io/python:3.10
+FROM python:3.10-slim
+
+# Create a non-root user
+RUN useradd -m weather
 
 # Set the working directory in the container
-WORKDIR /weather-app
+WORKDIR /home/weather/weather-app
 
 # Copy the current directory contents into the container at /weather-app
-COPY . /weather-app
+COPY . .
+
+# Change ownership of the entire /home/weather directory to the weather user
+RUN chown -R weather:weather /home/weather
 
 # Install any necessary dependencies
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt && \
+    chmod +x start.sh && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Make the start.sh script executable
-RUN chmod +x start.sh
+# Switch to the non-root user
+USER weather
+
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=/home/weather/weather-app:$PYTHONPATH
+
+# Run the unit tests
+RUN python3 -m unittest discover -s tests
+
+# remove the tests directory
+RUN rm -rf tests
 
 # Expose the port that the application runs on
 EXPOSE 80

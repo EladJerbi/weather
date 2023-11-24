@@ -9,10 +9,10 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 
 # Get the value of an environment variable
-HISTORY_DIR = os.getenv('HISTORY_DIR', '/weather-history')
+HISTORY_DIR = os.getenv('HISTORY_DIR', '/home/weather/weather-app/history')
 APP_ENV = os.getenv('APP_ENV', 'development')
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
-LOG_DIRECTORY = os.getenv('LOG_DIRECTORY', '/var/log/weather-app-logs')
+LOG_DIRECTORY = os.getenv('LOG_DIRECTORY', '/home/weather/weather-app/logs')
 DEBUG = APP_ENV == 'development'
 
 # turn this file to flask app.
@@ -23,9 +23,10 @@ app.config['ENV'] = APP_ENV  # Set your desired environment here
 city_views = Counter('city_views', 'Number of times each city has been looked at', ['city'])
 metrics = PrometheusMetrics(app)
 
-# Check if LOG_DIRECTORY exists when the application starts
+# check if LOG_DIRECTORY exists
 if not os.path.exists(LOG_DIRECTORY):
-    os.makedirs(LOG_DIRECTORY)
+    logging.error(f"Required directory {LOG_DIRECTORY} does not exist")
+    raise FileNotFoundError(f"Required directory {LOG_DIRECTORY} does not exist")
 # log to file
 start_date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 log_file_path = f'{LOG_DIRECTORY}/app_{start_date}.log'
@@ -43,11 +44,18 @@ class Forecast:
     def __str__(self):
         # Define the string representation of the object
         return f"Weather Date: {self.weather_date}, Temperature: {self.temperature}, Humidity: {self.humidity}, Icon: {self.icon}"
-
+    
+    def to_dict(self):
+        return {
+            "weather_date": self.weather_date,
+            "temperature": self.temperature,
+            "humidity": self.humidity,
+            "icon": self.icon,
+    }
 
 def convert_temperature(temperature_kelvin):
     temperature_celsius = temperature_kelvin - 273.15
-    return int(temperature_celsius)
+    return round(temperature_celsius)
 
 def get_weather(place):
     city_name = place.capitalize()
@@ -79,9 +87,9 @@ def get_weather(place):
         raise Exception(f"Failed to get weather data for {city_name}. Status code: {response.status_code}")
 
 
-# Check if history_dir exists when the application starts
 if not os.path.exists(HISTORY_DIR):
-    os.makedirs(HISTORY_DIR)
+    logging.error(f"Required directory {HISTORY_DIR} does not exist")
+    raise FileNotFoundError(f"Required directory {HISTORY_DIR} does not exist")
 
 # Define a function to save search queries to a JSON file
 def save_search_query(days):

@@ -14,9 +14,10 @@ weather-venv/
 *.csv
 *.json
 .DS_Store
+Jenkinsfile
+pod.yaml
 
 # ignore the files which the app created
 history/
 LICENSE
-tests/
 *.md
