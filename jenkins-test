@@ -22,7 +22,6 @@ pipeline {
             steps {
                 script {
                     // Run version.sh and capture the output
-                    sleep 99999999
                     env.IMAGE_TAG = sh(script: './version.sh', returnStdout: true).trim()
                 }
                 // Build the Docker image with Kaniko in the kaniko container
