@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 # Get the latest git tag
 latest_tag=$(git describe --tags --abbrev=0)
