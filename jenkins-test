@@ -20,18 +20,16 @@ pipeline {
                 }
             }
             steps {
+                script {
+                    sleep 99999999
+                    // Run version.sh and capture the output
+                    env.IMAGE_TAG = sh(script: './version.sh', returnStdout: true).trim()
+                }
+                // Build the Docker image with Kaniko in the kaniko container
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     sh '''
-                    sleep 9999999
-                    echo "Branch Name: ${env.GIT_BRANCH}"
-                    echo "Create a new version for the Docker image."
-                    ./version.sh
-
-                    echo "Building Docker image for the main branch, IMAGE_TAG created fron version.sh script"
-                    /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$(git describe --tags --abbrev=0)
-
-                    echo "Pushing the new git tag to git repository"
-                    git push --tags
+                    echo "Building Docker image for the main branch, IMAGE_TAG created from version.sh script"
+                    kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
                     '''
                 }
             }
