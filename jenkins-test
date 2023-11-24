@@ -40,15 +40,17 @@ pipeline {
             }
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
+                    sh 'echo BRANCH NAME == $BRANCH_NAME'
                     script {
                         def imageName_tag = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
-                        sh '''
-                        echo "Building Docker image for $GIT_BRANCH branch"
+                        sh """
+                        echo "Building Docker image for $BRANCH_NAME branch"
                         /kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/$imageName_tag
-                        '''
+                        """
                     }
                 }
             }
+        }
         }
         stage('Deploy') {
             when {
