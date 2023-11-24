@@ -16,13 +16,13 @@ pipeline {
             when {
                 expression {
                     // Execute this stage only if the branch is 'main'
-                    return env.BRANCH_NAME == 'main'
+                    return env.GIT_BRANCH == 'origin/main'
                 }
             }
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     sh '''
-                    echo "Branch Name: ${env.BRANCH_NAME}"
+                    echo "Branch Name: ${env.GIT_BRANCH}"
                     echo "Create a new version for the Docker image."
                     ./version.sh
 
@@ -36,15 +36,15 @@ pipeline {
             when {
                 expression {
                     // Execute this stage for any branch other than 'main'
-                    return env.BRANCH_NAME != 'origin/main'
+                    return env.GIT_BRANCH != 'origin/main'
                 }
             }
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
-                    echo "Branch Name: ${env.BRANCH_NAME}"
                     script {
                         echo "Branch Name: ${env.BRANCH_NAME}"
                         def imageName_tag = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
+                        echo imageName_tag: ${env.imageName_tag}
                         echo "Building Docker image for $BRANCH_NAME branch"
                         sh " /kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/$imageName_tag"
                     }
