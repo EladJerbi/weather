@@ -28,8 +28,7 @@ pipeline {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     sh '''
                     echo "Building Docker image for the main branch, IMAGE_TAG created from version.sh script"
-                    sleep 999999
-                    kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                    /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
                     '''
                 }
                 sh 'git push --tags'
