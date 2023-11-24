@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -ex
 
@@ -17,9 +17,9 @@ patch=$(echo "$latest_tag" | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\3/')
 # Function to determine the next semantic version
 calculate_version() {
     case $1 in
-        "MAJOR") echo "$((major + 1)).0.0";;
-        "MINOR") echo "$major.$((minor + 1)).0";;
-        "PATCH") echo "$major.$minor.$((patch + 1))";;
+        "MAJOR") echo $(($major + 1)).0.0;;
+        "MINOR") echo $major.$(($minor + 1)).0;;
+        "PATCH") echo $major.$minor.$(($patch + 1));;
         *) echo "Invalid version type: $1. Please use 'MAJOR', 'MINOR', or 'PATCH'." >&2; exit 1;;
     esac
 }
@@ -31,4 +31,3 @@ echo "Latest Git Tag: $latest_tag"
 echo "Latest Commit Message: $latest_commit_msg"
 echo "Next Semantic Version: v$next_version"
 git tag "v$next_version"
-
