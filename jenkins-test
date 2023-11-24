@@ -1,0 +1,36 @@
+pipeline {
+  agent {
+    kubernetes {
+      yamlFile 'pod.yaml'
+    }
+  }
+  stages {
+    stage('jnlp env') {
+      steps {
+        container('jnlp') {
+          sh '''
+            printenv
+          '''
+        }
+     }
+   }
+    stage('Kaniko env') {
+      steps {
+        container(name: 'kaniko', shell: '/busybox/sh') {
+          sh '''
+            printenv
+          '''
+        }
+     }
+   }
+    stage('kubectl env') {
+      steps {
+        container('kubectl') {
+          sh '''
+            printenv
+          '''
+        }
+      }
+    }
+  }
+}
