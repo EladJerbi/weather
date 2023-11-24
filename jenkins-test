@@ -22,6 +22,7 @@ pipeline {
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     sh '''
+                    sleep 9999999
                     echo "Branch Name: ${env.GIT_BRANCH}"
                     echo "Create a new version for the Docker image."
                     ./version.sh
