@@ -31,6 +31,7 @@ pipeline {
                     kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
                     '''
                 }
+                sh 'git push --tags'
             }
         }
         stage('Build with Kaniko for feature branches') {
