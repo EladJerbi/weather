@@ -59,15 +59,17 @@ pipeline {
                 }
             }
             steps {
-                container('kubectl') {
+                container('argo') {
                     sh 'echo "Deploying to Kubernetes cluster"'
                     script {
                         if (env.GIT_BRANCH == 'origin/main') {
-                            sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
-                            sh "argocd app sync weather-app"
+                            echo "Deploying to weather-prod"
+                            // sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
+                            // sh "argocd app sync weather-app"
                         } else {
-                            def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
-                            sh "kubectl run weather${BUILD_NUMBER} --image=eladjerbi/$IMAGE_NAME-testing:${imageTag} -n testing"
+                            echo "Deploying to weather-testing"
+                            // def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
+                            // sh "kubectl run weather${BUILD_NUMBER} --image=eladjerbi/$IMAGE_NAME-testing:${imageTag} -n testing"
                         }
                     }
                 }
