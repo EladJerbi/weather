@@ -1,36 +1,77 @@
 pipeline {
-  agent {
-    kubernetes {
-      yamlFile 'pod.yaml'
+    agent {
+        kubernetes {
+            yamlFile 'pod.yaml'
+        }
     }
-  }
-  stages {
-    stage('jnlp env') {
-      steps {
-        container('jnlp') {
-          sh '''
-            printenv
-          '''
-        }
-     }
-   }
-    stage('Kaniko env') {
-      steps {
-        container(name: 'kaniko', shell: '/busybox/sh') {
-          sh '''
-            printenv
-          '''
-        }
-     }
-   }
-    stage('kubectl env') {
-      steps {
-        container('kubectl') {
-          sh '''
-            printenv
-          '''
-        }
-      }
+    environment {
+        // Define environment variables if needed
+        DOCKER_REGISTRY = 'eladjerbi'
+        IMAGE_NAME = 'weather'
+        KUBE_NAMESPACE = 'testing'
+        GITOPS_REPO = 'https://github.com/EladJerbi/gitops-weather.git'
     }
-  }
+    stages {
+        stage('Build with Kaniko') {
+            when {
+                expression {
+                    // Execute this stage only if the branch is 'main'
+                    return env.GIT_BRANCH == 'origin/main'
+                }
+            }
+            steps {
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    sh '''
+                    echo "Create a new version for the Docker image."
+                    ./version.sh
+
+                    echo "Building Docker image for the main branch, IMAGE_TAG created fron version.sh script"
+                    /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                    '''
+                }
+            }
+        }
+        stage('Build for other branches') {
+            when {
+                expression {
+                    // Execute this stage for any branch other than 'main'
+                    return env.BRANCH_NAME != 'origin/main'
+                }
+            }
+            steps {
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    script {
+                        def imageName-tag = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
+                        sh '''
+                        echo "Building Docker image for $GIT_BRANCH branch"
+                        /kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/$imageName-tag
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                expression {
+                    // Execute this stage for any branch
+                    return true
+                }
+            }
+            steps {
+                container('kubectl') {
+                    sh 'echo BRANCH NAME == $BRANCH_NAME'
+                    sh 'echo "Deploying to Kubernetes cluster"'
+                    if (env.BRANCH_NAME == 'main') {
+                        sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
+                        sh "argocd app sync weather-app"
+                    } else {
+                        def imageName = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
+                        sh "kubectl run $imageName --image=$DOCKER_REGISTRY/$imageName -n $KUBE_NAMESPACE"
+                    }
+                }
+            }
+        }
+    }
 }
+
+
