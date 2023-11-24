@@ -67,7 +67,7 @@ pipeline {
                             sh "argocd app sync weather-app"
                         } else {
                             def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
-                            sh "kubectl run weather-${BUILD_NUMBER} --image=eladjerbi/$IMAGE_NAME-testing:${imageTag} -n testing"
+                            sh "kubectl run weather_${BUILD_NUMBER} --image=eladjerbi/$IMAGE_NAME-testing:${imageTag} -n testing"
                         }
                     }
                 }
