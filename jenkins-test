@@ -42,7 +42,8 @@ pipeline {
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     script {
-                        echo "Branch Name: ${env.BRANCH_NAME}"
+                        echo "git_branch: $GIT_BRANCH"
+                        echo "Branch Name: ${env.GIT_BRANCH}"
                         def imageName_tag = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
                         echo imageName_tag: ${env.imageName_tag}
                         echo "Building Docker image for $BRANCH_NAME branch"
