@@ -61,12 +61,15 @@ pipeline {
                 container('kubectl') {
                     sh 'echo BRANCH NAME == $BRANCH_NAME'
                     sh 'echo "Deploying to Kubernetes cluster"'
-                    if (env.BRANCH_NAME == 'main') {
-                        sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
-                        sh "argocd app sync weather-app"
-                    } else {
-                        def imageName = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
-                        sh "kubectl run $imageName --image=$DOCKER_REGISTRY/$imageName -n $KUBE_NAMESPACE"
+                    
+                    script {
+                        if (env.BRANCH_NAME == 'main') {
+                            sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
+                            sh "argocd app sync weather-app"
+                        } else {
+                            def imageName = "${IMAGE_NAME}-testing:${BUILD_NUMBER}-${GIT_COMMIT}"
+                            sh "kubectl create deployment $imageName --image=$DOCKER_REGISTRY/$imageName -n $KUBE_NAMESPACE"
+                        }
                     }
                 }
             }
