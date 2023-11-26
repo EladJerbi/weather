@@ -59,9 +59,8 @@ pipeline {
                             sh '''
                             git config --global user.name "$GIT_USERNAME"
                             git config --global user.email "$GIT_USERNAME@gmail.com"
-                            git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/gitops-weather.git
-                            echo $GIT_USERNAME $GIT_PASSWORD
-                            git clone https://github.com/EladJerbi/gitops-weather.git
+                            git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/gitops-weather.git
+                            echo user:$GIT_USERNAME password:$GIT_PASSWORD
                             '''
                             sh 'ls -la'
                             def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'gitops-weather/k8s/weather/weather-prod/values.yaml' : 'gitops-weather/k8s/weather/weather-dev/values.yaml'
