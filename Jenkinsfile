@@ -62,6 +62,7 @@ pipeline {
                             git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/gitops-weather.git
                             git clone https://github.com/EladJerbi/gitops-weather.git
                             '''
+                            sh 'ls -la'
                             def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'gitops-weather/k8s/weather/weather-prod/values.yaml' : 'gitops-weather/k8s/weather/weather-dev/values.yaml'
                             sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
                             sh '''
