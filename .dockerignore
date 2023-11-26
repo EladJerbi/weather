@@ -21,3 +21,4 @@ pod.yaml
 history/
 LICENSE
 *.md
+version.sh
