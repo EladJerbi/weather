@@ -42,11 +42,11 @@ pipeline {
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     script {
-                        def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
+                        env.IMAGE_TAG = "${BUILD_NUMBER}-${GIT_COMMIT}"
                         echo "Branch Name: ${env.GIT_BRANCH}"
                         echo "Image imageTag : ${imageTag}"
                         echo "Building Docker image for ${env.GIT_BRANCH} branch"
-                        sh "/kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/${IMAGE_NAME}-testing:$imageTag"
+                        sh "/kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/${IMAGE_NAME}-testing:$IMAGE_TAG"
                     }
                 }
             }
@@ -55,7 +55,7 @@ pipeline {
             steps {
                 container('jnlp') {
                     script {
-                        withCredentials([usernamePassword(credentialsId: 'github-all', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'gitops-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                             sh '''
                             git config --global user.name "$GIT_USERNAME"
                             git config --global user.email "$GIT_USERNAME@gmail.com"
@@ -67,29 +67,10 @@ pipeline {
                             cd gitops-weather
                             git add .
                             git commit -m "Update image tag"
-                            git status 
                             git push origin main
                             '''
                         }
                     }
-                }
-            }
-        }
-    }
-    post {
-        success {
-            script {
-                // Login to Git
-                withCredentials([usernamePassword(credentialsId: 'github-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh '''
-                    git config --global user.name "$GIT_USERNAME"
-                    git config --global user.email "$GIT_USERNAME@gmail.com"
-                    git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/weather.git
-                    '''
-                }
-                // Push tags
-                if (env.GIT_BRANCH == 'origin/main') {
-                    sh 'git push --tags'
                 }
             }
         }
