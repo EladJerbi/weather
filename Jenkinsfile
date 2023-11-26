@@ -55,27 +55,30 @@ pipeline {
         stage('Deploy') {
             steps {
                 container('jnlp') {
-                    script {
-                        withCredentials([usernamePassword(credentialsId: 'github-gitops-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                            sh '''
-                            git config --global user.name "$GIT_USERNAME"
-                            git config --global user.email "$GIT_USERNAME@gmail.com"
-                            git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@https://github.com/EladJerbi/gitops-weather.git
-                            '''
+                    stage('Deploy') {
+                        steps {
+                            container('jnlp') {
+                                script {
+                                    withCredentials([usernamePassword(credentialsId: 'github-gitops-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                                        sh '''
+                                        git config --global user.name "$GIT_USERNAME"
+                                        git config --global user.email "$GIT_USERNAME@gmail.com"
+                                        git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/${env.GITOPS_REPO}
+                                        '''
+                                    }
+                                    sh 'git clone https://github.com/${env.GITOPS_REPO}.git'
+                                    sh 'cd ${env.GITOPS_REPO}'
+                                    def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'k8s/weather/weather-prod/values.yaml' : 'k8s/weather/weather-dev/values.yaml'
+                                    sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
+                                    sh '''
+                                    git add .
+                                    git commit -m "Update image tag: ${env.IMAGE_TAG}"
+                                    git push origin main
+                                    '''
+                                }
+                            }
                         }
-                        sh 'git clone https://github.com/EladJerbi/gitops-weather.git'
-                        sh 'cd gitops-weather'
-                        def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'k8s/weather/weather-prod/values.yaml' : 'k8s/weather/weather-dev/values.yaml'
-                        sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
-                        sh '''
-                        git add .
-                        git commit -m "Update image tag"
-                        git push origin main
-                        '''
                     }
-                }
-            }
-        }
     }
     post {
       success {
