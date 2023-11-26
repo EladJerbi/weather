@@ -14,7 +14,7 @@ spec:
     args:
     - "9999999"
     securityContext:
-      runAsGroup: 1001
+      runAsGroup: 1000
     resources:
       limits:
         cpu: "250m"
