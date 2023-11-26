@@ -66,6 +66,7 @@ pipeline {
                             sh '''
                             cd gitops-weather
                             git add .
+                            sleep 100000
                             git commit -m "Update image tag: ${env.IMAGE_TAG}"
                             git push origin main
                             '''
