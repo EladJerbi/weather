@@ -13,6 +13,8 @@ spec:
     - sleep
     args:
     - "9999999"
+    securityContext:
+      runAsGroup: 1001
     resources:
       limits:
         cpu: "250m"
