@@ -29,8 +29,7 @@ next_version=$(calculate_version "$first_word")
 
 if [ "$next_version" = "$latestgit_tag" ]; then
     echo "$latest_tag"
-    exit 0
+else
+    echo "v$next_version"
+    git tag "$next_version"
 fi
-
-echo "v$next_version"
-git tag "$next_version"
