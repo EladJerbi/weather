@@ -5,7 +5,7 @@ pipeline {
     }
   }
   environment {
-    // Define environment variables if needed
+    // Define environment variables 
     DOCKER_REGISTRY = 'eladjerbi'
     IMAGE_NAME = 'weather'
     KUBE_NAMESPACE = 'testing'
@@ -28,7 +28,7 @@ pipeline {
         container(name: 'kaniko', shell: '/busybox/sh') {
           sh '''
           echo "Building Docker image for the main branch, IMAGE_TAG created from version.sh script"
-          /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+          /kaniko/executor --context "$(pwd)" --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
           '''
         }
       }
@@ -47,7 +47,7 @@ pipeline {
             echo "Branch Name: ${env.GIT_BRANCH}"
             echo "Image imageTag : ${imageTag}"
             echo "Building Docker image for ${env.GIT_BRANCH} branch"
-            sh "/kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/${IMAGE_NAME}-testing:$imageTag"
+            sh "/kaniko/executor --context \"$(pwd)\" --destination $DOCKER_REGISTRY/${IMAGE_NAME}-testing:$imageTag"
           }
         }
       }
@@ -60,10 +60,10 @@ pipeline {
               sh '''
               git config --global user.name "$GIT_USERNAME"
               git config --global user.email "$GIT_USERNAME@gmail.com"
-              git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/${env.GITOPS_REPO}
+              git remote set-url origin ${env.GITOPS_REPO}
               '''
             }
-            sh 'git clone https://github.com/${env.GITOPS_REPO}.git'
+            sh 'git clone ${env.GITOPS_REPO}'
             sh 'cd gitops-weather'
             def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'k8s/weather/weather-prod/values.yaml' : 'k8s/weather/weather-dev/values.yaml'
             sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
