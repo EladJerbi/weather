@@ -76,6 +76,7 @@ pipeline {
         }
       }
     }
+  }
   post {
     success {
       script {
