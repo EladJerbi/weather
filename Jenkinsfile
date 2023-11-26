@@ -62,12 +62,12 @@ pipeline {
             steps {
                 container('argo') {
                     sh 'echo "Deploying to Kubernetes cluster"'
+                    sh 'argocd -h'
                     script {
                         if (env.GIT_BRANCH == 'origin/main') {
                             echo "Deploying to weather-prod"
                             // sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
                             // sh "argocd app sync weather-app"
-                            argocd -h
                         } else {
                             echo "Deploying to weather-testing"
                             // def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
