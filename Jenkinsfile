@@ -55,11 +55,12 @@ pipeline {
             steps {
                 container('jnlp') {
                     script {
-                        withCredentials([usernamePassword(credentialsId: 'github-gitops-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        withCredentials([usernamePassword(credentialsId: 'github-all', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                             sh '''
                             git config --global user.name "$GIT_USERNAME"
                             git config --global user.email "$GIT_USERNAME@gmail.com"
                             git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/gitops-weather.git
+                            echo $GIT_USERNAME $GIT_PASSWORD
                             git clone https://github.com/EladJerbi/gitops-weather.git
                             '''
                             sh 'ls -la'
