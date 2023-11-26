@@ -75,4 +75,13 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            emailext (
+                to: 'eladxjerbi@gmail.com',
+                subject: "Jenkins build ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
+                body: "Check console output at ${env.BUILD_URL} to view the results.",
+            )
+        }
+    }
 }
