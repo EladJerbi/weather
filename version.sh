@@ -10,9 +10,9 @@ latest_commit_msg=$(git log -1 --pretty=%B)
 first_word=$(echo "$latest_commit_msg" | awk '{print toupper($1)}' | tr -d ':')
 
 # Extract major, minor, and patch version from the latest tag
-major=$(echo "$latest_tag" | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\1/')
-minor=$(echo "$latest_tag" | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\2/')
-patch=$(echo "$latest_tag" | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\3/')
+major=$(echo "$latest_tag" | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/v\1/')
+minor=$(echo "$latest_tag" | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/.\2/')
+patch=$(echo "$latest_tag" | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/.\3/')
 
 # Function to determine the next semantic version
 calculate_version() {
@@ -27,5 +27,10 @@ calculate_version() {
 # Determine the next version based on the first word of the latest commit
 next_version=$(calculate_version "$first_word")
 
+if [ "$next_version" = "$latestgit_tag" ]; then
+    echo "$latest_tag"
+    exit 0
+fi
+
 echo "v$next_version"
-git tag "v$next_version"
+git tag "$next_version"
