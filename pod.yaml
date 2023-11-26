@@ -6,20 +6,6 @@ metadata:
 spec:
   serviceAccountName: jenkins-agent
   containers:
-  - name: argo
-    image: eladjerbi/argo-cli:v0.0.0 
-    imagePullPolicy: Always
-    command:
-    - sleep
-    args:
-    - "9999999"
-    securityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
-    resources:
-      limits:
-        cpu: "250m"
-        memory: "250Mi"
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     imagePullPolicy: Always
