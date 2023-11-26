@@ -31,11 +31,6 @@ pipeline {
                     /kaniko/executor --context `pwd` --cache=true --cache-dir=/workspace/cache --destination $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
                     '''
                 }
-                container('jnlp') {
-                    sh 'whoami'
-                    sh 'sleep 10100010'
-                    sh 'git push --tags'
-                }
             }
         }
         stage('Build with Kaniko for feature branches') {
@@ -79,6 +74,25 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+    }
+    post {
+        always {
+            // Empty block
+        }
+        success {
+            script {
+                // Login to Git
+                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh '''
+                    git config --global user.name "$GIT_USERNAME"
+                    git config --global user.email "$GIT_USERNAME@gmail.com"
+                    git remote set-url origin https://github.com/EladJerbi/weather.git
+                    '''
+                }
+                // Push tags
+                sh 'git push --tags'
             }
         }
     }
