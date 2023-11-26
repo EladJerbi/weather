@@ -53,46 +53,47 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when {
-                expression {
-                    // Execute this stage for any branch
-                    return true
-                }
-            }
             steps {
-                container('argo') {
-                    sh 'echo "Deploying to Kubernetes cluster"'
-                    sh 'argocd -h'
+                container('jnlp') {
                     script {
-                        if (env.GIT_BRANCH == 'origin/main') {
-                            echo "Deploying to weather-prod"
-                            // sh "argocd app set weather-app --repo $GITOPS_REPO --path . --dest-namespace $KUBE_NAMESPACE"
-                            // sh "argocd app sync weather-app"
-                        } else {
-                            echo "Deploying to weather-testing"
-                            // def imageTag = "${BUILD_NUMBER}-${GIT_COMMIT}"
-                            // sh "kubectl run weather${BUILD_NUMBER} --image=eladjerbi/$IMAGE_NAME-testing:${imageTag} -n testing"
+                        withCredentials([usernamePassword(credentialsId: 'github-gitops-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                            sh '''
+                            git config --global user.name "$GIT_USERNAME"
+                            git config --global user.email "$GIT_USERNAME@gmail.com"
+                            git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@https://github.com/EladJerbi/gitops-weather.git
+                            '''
                         }
+                        sh 'git clone https://github.com/EladJerbi/gitops-weather.git'
+                        sh 'cd gitops-weather'
+                        def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'k8s/weather/weather-prod/values.yaml' : 'k8s/weather/weather-dev/values.yaml'
+                        sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
+                        sh '''
+                        git add .
+                        git commit -m "Update image tag"
+                        git push origin main
+                        '''
                     }
                 }
             }
         }
     }
     post {
-        success {
-            script {
-                // Login to Git
-                withCredentials([usernamePassword(credentialsId: 'github-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh '''
-                    git config --global user.name "$GIT_USERNAME"
-                    git config --global user.email "$GIT_USERNAME@gmail.com"
-                    git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/weather.git
-                    '''
-                }
-                // Push tags
-                sh 'git push --tags'
-            }
+      success {
+        script {
+          // Login to Git
+          withCredentials([usernamePassword(credentialsId: 'github-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+            sh '''
+            git config --global user.name "$GIT_USERNAME"
+            git config --global user.email "$GIT_USERNAME@gmail.com"
+            git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/weather.git
+            '''
+          }
+          // Push tags
+          if (env.GIT_BRANCH == 'origin/main') {
+            sh 'git push --tags'
+          }
         }
+      }
     }
 }
 

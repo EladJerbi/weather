@@ -48,3 +48,4 @@ spec:
   - name: cache
     persistentVolumeClaim:
       claimName: kaniko-images-claim
+  
