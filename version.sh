@@ -20,7 +20,7 @@ calculate_version() {
         "MAJOR") echo $(($major + 1)).0.0;;
         "MINOR") echo $major.$(($minor + 1)).0;;
         "PATCH") echo $major.$minor.$(($patch + 1));;
-        *) echo "Invalid version type: $1. Please use 'MAJOR', 'MINOR', or 'PATCH'." >&2; exit 1;;
+         *) echo "$latest_tag";;
     esac
 }
 
