@@ -86,7 +86,7 @@ pipeline {
                     sh '''
                     git config --global user.name "$GIT_USERNAME"
                     git config --global user.email "$GIT_USERNAME@gmail.com"
-                    git remote set-url origin https://github.com/EladJerbi/weather.git
+                    git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/weather.git
                     '''
                 }
                 // Push tags
