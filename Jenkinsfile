@@ -82,7 +82,7 @@ pipeline {
         success {
             script {
                 // Login to Git
-                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'github-weather', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     sh '''
                     git config --global user.name "$GIT_USERNAME"
                     git config --global user.email "$GIT_USERNAME@gmail.com"
