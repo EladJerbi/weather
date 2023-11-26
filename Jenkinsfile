@@ -60,17 +60,16 @@ pipeline {
                             git config --global user.name "$GIT_USERNAME"
                             git config --global user.email "$GIT_USERNAME@gmail.com"
                             git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/gitops-weather.git
+                            git clone https://github.com/EladJerbi/gitops-weather.git
+                            '''
+                            def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'gitops-weather/k8s/weather/weather-prod/values.yaml' : 'gitops-weather/k8s/weather/weather-dev/values.yaml'
+                            sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
+                            sh '''
+                            git add .
+                            git commit -m "Update image tag: ${env.IMAGE_TAG}"
+                            git push origin main
                             '''
                         }
-                        sh 'git clone https://github.com/EladJerbi/gitops-weather.git'
-                        def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'k8s/weather/weather-prod/values.yaml' : 'k8s/weather/weather-dev/values.yaml'
-                        sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
-                        sh '''
-                        cd gitops-weather
-                        git add .
-                        git commit -m "Update image tag: ${env.IMAGE_TAG}"
-                        git push origin main
-                        '''
                     }
                 }
             }
