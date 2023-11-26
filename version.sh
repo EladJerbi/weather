@@ -27,7 +27,7 @@ calculate_version() {
 # Determine the next version based on the first word of the latest commit
 next_version=$(calculate_version "$first_word")
 
-if [ "$next_version" = "$latestgit_tag" ]; then
+if [ "$next_version" = "$latest_tag" ]; then
     echo "$latest_tag"
 else
     echo "v$next_version"
