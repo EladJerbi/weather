@@ -44,7 +44,7 @@ pipeline {
                     script {
                         env.IMAGE_TAG = "${BUILD_NUMBER}-${GIT_COMMIT}"
                         echo "Branch Name: ${env.GIT_BRANCH}"
-                        echo "Image imageTag : ${imageTag}"
+                        echo "Image imageTag : ${IMAGE_TAG}"
                         echo "Building Docker image for ${env.GIT_BRANCH} branch"
                         sh "/kaniko/executor --context `pwd` --destination $DOCKER_REGISTRY/${IMAGE_NAME}-testing:$IMAGE_TAG"
                     }
