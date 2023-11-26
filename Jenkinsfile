@@ -78,9 +78,6 @@ pipeline {
         }
     }
     post {
-        always {
-            // Empty block
-        }
         success {
             script {
                 // Login to Git
