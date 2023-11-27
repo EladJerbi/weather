@@ -51,7 +51,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Update Gitops repo Helm chart.') {
             steps {
                 container('jnlp') {
                     script {

@@ -9,7 +9,6 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 
 # Get the value of an environment variable
-
 HISTORY_DIR = os.getenv('HISTORY_DIR', '/home/weather/weather-app/history')
 APP_ENV = os.getenv('APP_ENV', 'development')
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
