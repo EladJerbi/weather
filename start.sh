@@ -14,4 +14,4 @@ for var in $(compgen -v); do
   fi
 done
 
-exec gunicorn -w 3 -b :80 app:app
+exec gunicorn -w 3 -b :30080 app:app

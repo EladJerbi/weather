@@ -9,10 +9,11 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 
 # Get the value of an environment variable
+
 HISTORY_DIR = os.getenv('HISTORY_DIR', '/home/weather/weather-app/history')
 APP_ENV = os.getenv('APP_ENV', 'development')
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
-LOG_DIRECTORY = os.getenv('LOG_DIRECTORY', '/home/weather/weather-app/logs')
+LOG_DIRECTORY = os.getenv('LOG_DIR', '/home/weather/weather-app/logs')
 DEBUG = APP_ENV == 'development'
 
 # turn this file to flask app.
