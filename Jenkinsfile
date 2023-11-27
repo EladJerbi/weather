@@ -63,7 +63,7 @@ pipeline {
                             '''
                             def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'gitops-weather/k8s/weather/weather-prod' : 'gitops-weather/k8s/weather/weather-dev'
                             sh '''
-                            ./gitops-weather/k8s/weather/version-chart.sh ${valuesPath}
+                            ./gitops-weather/k8s/weather/version-chart.sh ${env.valuesPath} ${env.IMAGE_TAG}
                             cd gitops-weather
                             git add .
                             git commit -m "Update image tag"
