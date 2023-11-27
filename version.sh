@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ex
+set -e
 
 # Path to the file containing the version
 version_file="version.txt"

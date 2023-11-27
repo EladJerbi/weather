@@ -61,9 +61,9 @@ pipeline {
                             git config --global user.email "$GIT_USERNAME@gmail.com"
                             git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/gitops-weather.git
                             '''
-                            def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'gitops-weather/k8s/weather/weather-prod/values.yaml' : 'gitops-weather/k8s/weather/weather-dev/values.yaml'
-                            sh "sed -i 's|tag: .*|tag: ${env.IMAGE_TAG}|' ${valuesPath}"
+                            def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'gitops-weather/k8s/weather/weather-prod' : 'gitops-weather/k8s/weather/weather-dev'
                             sh '''
+                            ./gitops/k8s/weather/version-chart.sh ${valuesPath}
                             cd gitops-weather
                             git add .
                             git commit -m "Update image tag"
@@ -73,15 +73,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    post {
-        always {
-            emailext (
-                to: 'eladxjerbi@gmail.com',
-                subject: "Jenkins build ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
-                body: "Check console output at ${env.BUILD_URL} to view the results.",
-            )
         }
     }
 }
