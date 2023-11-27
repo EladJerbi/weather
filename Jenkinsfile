@@ -62,14 +62,13 @@ pipeline {
                             git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/EladJerbi/gitops-weather.git
                             '''
                             def valuesPath = env.GIT_BRANCH == 'origin/main' ? 'weather-prod' : 'weather-dev'
-                            sh '''
-                            ls -la
-                            ./gitops-weather/k8s/weather/version-chart.sh ${env.valuesPath} ${env.IMAGE_TAG}
+                            sh """
+                            ./gitops-weather/k8s/weather/version-chart.sh ${valuesPath} ${env.IMAGE_TAG}
                             cd gitops-weather
                             git add .
                             git commit -m "Update image tag"
                             git push origin main
-                            '''
+                            """
                         }
                     }
                 }
