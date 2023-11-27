@@ -28,8 +28,7 @@ calculate_version() {
     case $1 in
         "MAJOR") echo $(($major + 1)).0.0;;
         "MINOR") echo $major.$(($minor + 1)).0;;
-        "PATCH") echo $major.$minor.$(($patch + 1));;
-         *) echo "$latest_version";;
+        *) echo $major.$minor.$(($patch + 1));;  # Default to PATCH if none of the options match
     esac
 }
 
