@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, send_from_directory, abort
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_pymongo import PyMongo
 from datetime import datetime
 import requests
@@ -16,12 +16,26 @@ def create_app():
     # Set up logging
     logging.basicConfig(level=logging.DEBUG if app.config['ENV'] == 'development' else logging.INFO)
 
-     # Construct the MongoDB connection string
+    # Construct the MongoDB connection string
     app.config['MONGO_URI'] = f"mongodb://{os.getenv('MONGODB_USERNAME')}:{os.getenv('MONGODB_PASSWORD')}@mongodb-dev.mongo.svc.cluster.local:27017/{os.getenv('MONGODB_DATABASE')}"
 
+    # MongoDB Setup
     mongo = PyMongo(app)
+    app.mongo = mongo
+
+    # Health Check Route
+    @app.route('/health')
+    def health_check():
+        try:
+            # Attempt to connect to MongoDB
+            app.mongo.db.command('ping')
+            return jsonify({"status": "ok"})
+        except Exception as e:
+            app.logger.error(f"Health check failed: {str(e)}")
+            return jsonify({"status": "error", "message": str(e)}), 500
 
     return app
+
 
 app = create_app()
 
