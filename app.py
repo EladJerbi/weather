@@ -24,7 +24,7 @@ def create_app():
     app.mongo = mongo
 
     # Health Check Route
-    @app.route('/health')
+    @app.route('/mongohealth')
     def health_check():
         try:
             # Attempt to connect to MongoDB
