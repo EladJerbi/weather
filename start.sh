@@ -7,11 +7,7 @@ export $(grep -v '^#' .env | xargs)
 # Load environment variables from /vault/secrets/config file
 export $(grep -v '^#' /vault/secrets/config | xargs)
 
-# Create directories for every variable with DIR in its name
-for var in $(compgen -v); do
-  if [[ $var == *DIR ]]; then
-    mkdir -p "${!var}"
-  fi
-done
+# Load environment variables from /vault/secrets/mongodb-creds file
+export $(grep -v '^#' /vault/secrets/mongodb-creds | xargs)
 
 exec gunicorn -w 3 -b :80 app:app

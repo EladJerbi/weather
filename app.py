@@ -1,39 +1,31 @@
 from flask import Flask, render_template, request, redirect, send_from_directory, abort
+from flask_pymongo import PyMongo
 from datetime import datetime
 import requests
-import os
-import json
 import logging
-from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
-from prometheus_flask_exporter import PrometheusMetrics
+import os
 
 
-# Get the value of an environment variable
-
-HISTORY_DIR = os.getenv('HISTORY_DIR', '/home/weather/weather-app/history')
 APP_ENV = os.getenv('APP_ENV', 'development')
+DEBUG = APP_ENV
+
+def create_app():
+    app = Flask(__name__)
+    app.config['ENV'] = APP_ENV  
+
+    # Set up logging
+    logging.basicConfig(level=logging.DEBUG if app.config['ENV'] == 'development' else logging.INFO)
+
+     # Construct the MongoDB connection string
+    app.config['MONGO_URI'] = f"mongodb://{os.getenv('MONGODB_USERNAME')}:{os.getenv('MONGODB_PASSWORD')}@mongodb-dev.mongo.svc.cluster.local:27017/{os.getenv('MONGODB_DATABASE')}"
+
+    mongo = PyMongo(app)
+
+    return app
+
+app = create_app()
+
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
-LOG_DIRECTORY = os.getenv('LOG_DIR', '/home/weather/weather-app/logs')
-DEBUG = APP_ENV == 'development'
-
-# turn this file to flask app.
-app = Flask(__name__)
-app.config['ENV'] = APP_ENV  # Set your desired environment here
-
-# custom metrics for Prometheus
-city_views = Counter('city_views', 'Number of times each city has been looked at', ['city'])
-metrics = PrometheusMetrics(app)
-
-# check if LOG_DIRECTORY exists
-if not os.path.exists(LOG_DIRECTORY):
-    logging.error(f"Required directory {LOG_DIRECTORY} does not exist")
-    raise FileNotFoundError(f"Required directory {LOG_DIRECTORY} does not exist")
-# log to file
-start_date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-log_file_path = f'{LOG_DIRECTORY}/app_{start_date}.log'
-logging.basicConfig(filename=log_file_path, level=logging.INFO,
-                    format='%(asctime)s %(levelname)s %(name)s : %(message)s')
-
 
 class Forecast:
     def __init__(self, weather_date, temperature, humidity, icon):
@@ -88,42 +80,6 @@ def get_weather(place):
         raise Exception(f"Failed to get weather data for {city_name}. Status code: {response.status_code}")
 
 
-if not os.path.exists(HISTORY_DIR):
-    logging.error(f"Required directory {HISTORY_DIR} does not exist")
-    raise FileNotFoundError(f"Required directory {HISTORY_DIR} does not exist")
-
-# Define a function to save search queries to a JSON file
-def save_search_query(days):
-    now = datetime.now()
-    date_string = now.strftime("%Y-%m-%d %H:%M:%S")
-
-    if len(days) > 2:
-        city = days[1]
-
-        # Generate a unique filename based on date and city
-        filename = f"{city.replace(' ', '_')}_{now.strftime('%Y%m%d%H%M%S')}.json"
-
-        # Extract forecast data (excluding the first two elements)
-        forecast_data = []
-        for day in days[2:]:
-            forecast_data.append({
-                "weather_date": day.weather_date,
-                "temperature": day.temperature,
-                "humidity": day.humidity,
-            })
-
-        # Create the query data with just the forecast data
-        query_data = {
-            "date": date_string,
-            "city": city,
-            "forecast": forecast_data,
-        }
-
-        # Write the query data to the JSON file
-        with open(os.path.join(HISTORY_DIR, filename), "w") as file:
-            json.dump(query_data, file, indent=4)
-
-
 @app.context_processor
 def inject_bg_color():
     return dict(bg_color=os.environ.get('BG_COLOR', '#B2ABBF'))
@@ -154,40 +110,10 @@ def weather():
     forecast = get_weather(place.capitalize())
 
     if forecast:
-        try:
-            # Save the request in a file
-            save_search_query(forecast)
-        except Exception as e:
-            # Handle the exception, e.g., log the error message
-            logging.error(f"Error while saving search query: {e}")
-        
-        return render_template("weather.html", forecast=forecast)
-        
+        return render_template("weather.html", forecast=forecast) 
     else:
         error_message = "Unable to retrieve the forecast for {}".format(place)
         return render_template("index.html", error_message=error_message)
-
-
-@app.route("/history")
-def history():
-    # Directly get all JSON files
-    files = [f for f in os.listdir(HISTORY_DIR) if f.endswith('.json')]
-    return render_template("history.html", files=files)
-
-
-@app.route("/history/<filename>")
-def download_file(filename):
-    file_path = os.path.join(HISTORY_DIR, filename)
-    if os.path.exists(file_path):
-        return send_from_directory(directory=HISTORY_DIR, path=filename, as_attachment=True)
-    else:
-        abort(404)
-
-
-# custom metrics route
-@app.route('/metrics', methods=['GET'])
-def metrics():
-    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 
 if __name__ == '__main__':
