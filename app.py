@@ -17,8 +17,9 @@ def create_app():
     logging.basicConfig(level=logging.DEBUG if app.config['ENV'] == 'development' else logging.INFO)
 
     # Construct the MongoDB connection string
-                            # f"mongodb://{os.getenv('MONGODB_USERNAME')}:{os.getenv('MONGODB_PASSWORD')}@mongodb-dev.mongo.svc.cluster.local:27017/{os.getenv('MONGODB_DATABASE')}"
-    app.config["MONGO_URI"] = "mongodb://weather-app:16042002@mongo-mongodb.mongo.svc.cluster.local:27017/weatherdb"
+                             # "mongodb://weather-app:16042002@mongo-mongodb.mongo.svc.cluster.local:27017/weatherdb"
+    print(f"mongodb://{os.getenv('MONGODB_USERNAME')}:{os.getenv('MONGODB_PASSWORD')}@mongo-mongodb.mongo.svc.cluster.local:27017/{os.getenv('MONGODB_DATABASE')}")
+    app.config["MONGO_URI"] = f"mongodb://{os.getenv('MONGODB_USERNAME')}:{os.getenv('MONGODB_PASSWORD')}@mongo-mongodb.mongo.svc.cluster.local:27017/{os.getenv('MONGODB_DATABASE')}"
 
     # MongoDB Setup
     mongo = PyMongo(app)
